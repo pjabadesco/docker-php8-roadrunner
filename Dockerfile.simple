@@ -1,0 +1,42 @@
+FROM php:8.3-cli
+
+# Install basic dependencies and PHP extensions
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    zip \
+    unzip \
+    git \
+    && docker-php-ext-install -j$(nproc) \
+    pdo \
+    pdo_mysql \
+    mysqli \
+    opcache \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install RoadRunner (latest version 2025.1.3)
+ENV RR_VERSION=2025.1.3
+RUN wget -O roadrunner.tar.gz "https://github.com/roadrunner-server/roadrunner/releases/download/v${RR_VERSION}/roadrunner-${RR_VERSION}-linux-amd64.tar.gz" \
+    || wget -O roadrunner.tar.gz "https://github.com/roadrunner-server/roadrunner/releases/latest/download/roadrunner-linux-amd64.tar.gz" \
+    && tar -xzf roadrunner.tar.gz \
+    && find . -name "rr" -type f -executable -exec mv {} /usr/local/bin/rr \; \
+    && chmod +x /usr/local/bin/rr \
+    && rm -rf roadrunner.tar.gz roadrunner-* \
+    && rr version
+
+# Set working directory
+WORKDIR /app
+
+# Copy application files
+COPY . /app
+
+# Expose port
+EXPOSE 8080
+
+# Run PHP built-in server
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "/app"]
