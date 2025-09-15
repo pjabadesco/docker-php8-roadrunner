@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    image: pjabadesco/php8-roadrunner:latest
+    container_name: php-roadrunner-app
+    volumes:
+      - ./:/app
+      - ./php.ini:/usr/local/etc/php/php.ini:ro
+      - ~/.composer:/root/.composer
+    ports:
+      - "8080:8080"  # HTTP server
+      - "6001:6001"  # gRPC server
+      - "2112:2112"  # Metrics
+    environment:
+      # External MySQL connection
+      - DB_CONNECTION=${DB_CONNECTION:-mysql}
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_DATABASE=${DB_DATABASE:-}
+      - DB_USERNAME=${DB_USERNAME:-}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+
+      # External Redis connection
+      - REDIS_HOST=${REDIS_HOST:-localhost}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+
+      # External MongoDB connection
+      - MONGODB_HOST=${MONGODB_HOST:-localhost}
+      - MONGODB_PORT=${MONGODB_PORT:-27017}
+      - MONGODB_DATABASE=${MONGODB_DATABASE:-}
+      - MONGODB_USERNAME=${MONGODB_USERNAME:-}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD:-}
+
+      # External SQL Server connection
+      - SQLSRV_HOST=${SQLSRV_HOST:-localhost}
+      - SQLSRV_PORT=${SQLSRV_PORT:-1433}
+      - SQLSRV_DATABASE=${SQLSRV_DATABASE:-}
+      - SQLSRV_USERNAME=${SQLSRV_USERNAME:-}
+      - SQLSRV_PASSWORD=${SQLSRV_PASSWORD:-}
+
+      # External Temporal server connection
+      - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-localhost:7233}
+      - TEMPORAL_NAMESPACE=${TEMPORAL_NAMESPACE:-default}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
