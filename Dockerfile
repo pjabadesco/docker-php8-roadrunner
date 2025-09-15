@@ -72,6 +72,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 RUN chmod +x /usr/local/bin/rr
 
+# Install sockets extension if not present
+RUN docker-php-ext-install sockets 2>/dev/null || true
+
 # Copy custom php.ini
 COPY php.ini /usr/local/etc/php/php.ini
 
