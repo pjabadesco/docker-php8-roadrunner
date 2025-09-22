@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libwebp-dev \
+    libpq-dev \
     gnupg \
     apt-transport-https \
     ca-certificates \
@@ -41,7 +42,9 @@ RUN docker-php-ext-configure gd \
     && docker-php-ext-install -j$(nproc) \
     pdo \
     pdo_mysql \
+    pdo_pgsql \
     mysqli \
+    pgsql \
     mbstring \
     opcache \
     curl \

@@ -1,16 +1,16 @@
 ## OLD
 
 docker-compose build
-docker build -t pjabadesco/php8-roadrunner:0.2 .
+docker build -t pjabadesco/php8-roadrunner:0.3 .
 
 ## NEW
 
 docker buildx build --platform=linux/amd64 --build-arg LEGACY_TLS=true --tag=php8-roadrunner:latest --load .
 
-docker tag php8-roadrunner:latest pjabadesco/php8-roadrunner:0.2
-docker push pjabadesco/php8-roadrunner:0.2
+docker tag php8-roadrunner:latest pjabadesco/php8-roadrunner:0.3
+docker push pjabadesco/php8-roadrunner:0.3
 
-docker tag pjabadesco/php8-roadrunner:0.2 pjabadesco/php8-roadrunner:latest
+docker tag pjabadesco/php8-roadrunner:0.3 pjabadesco/php8-roadrunner:latest
 docker push pjabadesco/php8-roadrunner:latest
 
 docker tag pjabadesco/php8-roadrunner:latest ghcr.io/pjabadesco/php8-roadrunner:latest
