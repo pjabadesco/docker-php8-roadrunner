@@ -1,5 +1,20 @@
-FROM spiralscout/roadrunner:2025.1.3 AS roadrunner
+# Use Golang to build RoadRunner with all plugins including Redis
+FROM golang:1.23-alpine AS roadrunner-builder
 
+# Install git and build dependencies
+RUN apk add --no-cache git
+
+# Install Velox (RoadRunner build tool)
+RUN go install github.com/roadrunner-server/velox/v2025@latest
+
+# Build RoadRunner with Redis jobs plugin
+WORKDIR /build
+RUN /go/bin/velox build \
+    -o /usr/bin/rr \
+    github.com/roadrunner-server/roadrunner/v2025@v2025.1.3 \
+    github.com/roadrunner-server/redis/jobs/v5@latest
+
+# Main PHP image
 FROM php:8.3-cli
 
 # Install system dependencies
@@ -71,8 +86,8 @@ RUN pecl install grpc-1.65.2 \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy RoadRunner from builder
-COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
+# Copy RoadRunner from custom builder with Redis support
+COPY --from=roadrunner-builder /usr/bin/rr /usr/local/bin/rr
 RUN chmod +x /usr/local/bin/rr
 
 # Install sockets extension if not present
