@@ -1,25 +1,5 @@
-# Use Golang to build RoadRunner with all plugins including Redis
-FROM golang:1.25.3-alpine3.22 AS roadrunner-builder
+FROM spiralscout/roadrunner:2025.1.3 AS roadrunner
 
-# Install git and build dependencies
-RUN apk add --no-cache git
-
-# Install Velox (RoadRunner build tool)
-RUN go install github.com/roadrunner-server/velox/v2025/cmd/vx@latest
-
-# Build RoadRunner with Redis jobs plugin
-WORKDIR /build
-
-# Copy velox configuration
-COPY velox.toml .
-
-# Build RoadRunner with all plugins
-RUN GOOS=linux GOARCH=amd64 /go/bin/vx build -c velox.toml -o /usr/bin/ && \
-    chmod +x /usr/bin/rr && \
-    ls -la /usr/bin/rr && \
-    /usr/bin/rr --version
-
-# Main PHP image
 FROM php:8.3-cli
 
 # Install system dependencies
@@ -91,10 +71,9 @@ RUN pecl install grpc-1.65.2 \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy RoadRunner from custom builder with Redis support
-COPY --from=roadrunner-builder /usr/bin/rr /usr/local/bin/rr
-RUN chmod +x /usr/local/bin/rr && \
-    ls -la /usr/local/bin/rr
+# Copy RoadRunner from builder
+COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
+RUN chmod +x /usr/local/bin/rr
 
 # Install sockets extension if not present
 RUN docker-php-ext-install sockets 2>/dev/null || true
@@ -116,42 +95,5 @@ EXPOSE 8080
 EXPOSE 6001
 EXPOSE 2112
 
-# Create default worker files for testing
-RUN echo '<?php\n\
-use Spiral\RoadRunner;\n\
-use Nyholm\Psr7;\n\
-\n\
-require "vendor/autoload.php";\n\
-\n\
-$worker = RoadRunner\Worker::create();\n\
-$psrFactory = new Psr7\Factory\Psr17Factory();\n\
-$psr7 = new RoadRunner\Http\PSR7Worker($worker, $psrFactory, $psrFactory, $psrFactory);\n\
-\n\
-while ($req = $psr7->waitRequest()) {\n\
-    try {\n\
-        $psr7->respond(new Psr7\Response(200, [], "Hello from RoadRunner!"));\n\
-    } catch (\\Throwable $e) {\n\
-        $psr7->respond(new Psr7\Response(500, [], $e->getMessage()));\n\
-    }\n\
-}' > /app/psr-worker.php
-
-RUN echo '<?php\n\
-use Spiral\RoadRunner\\Jobs\\Consumer;\n\
-use Spiral\RoadRunner\\Jobs\\Task\\ReceivedTaskInterface;\n\
-\n\
-require "vendor/autoload.php";\n\
-\n\
-$consumer = new Consumer();\n\
-\n\
-while ($task = $consumer->waitTask()) {\n\
-    try {\n\
-        $payload = $task->getPayload();\n\
-        // Process your job here\n\
-        $task->complete();\n\
-    } catch (\\Throwable $e) {\n\
-        $task->fail($e);\n\
-    }\n\
-}' > /app/jobs-worker.php
-
-# Default command - run PHP built-in server (can be overridden to use RoadRunner)
+# Default command
 CMD ["php", "-S", "0.0.0.0:8080", "-t", "/app"]

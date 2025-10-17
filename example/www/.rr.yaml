@@ -1,0 +1,84 @@
+version: "3"
+
+rpc:
+  listen: tcp://127.0.0.1:6001
+
+server:
+  command: "php worker.php"
+  relay: pipes
+
+http:
+  address: 0.0.0.0:8080
+  pool:
+    num_workers: 4
+    max_jobs: 500
+    allocate_timeout: 60s
+    destroy_timeout: 60s
+  middleware:
+    - gzip
+    - headers
+
+headers:
+  cors:
+    allowed_origin: "*"
+    allowed_headers: "*"
+    allowed_methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allow_credentials: true
+    exposed_headers: "Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma"
+    max_age: 600
+
+temporal:
+  address: temporal:7233
+  namespace: default
+  cache_size: 64
+  activities:
+    num_workers: 4
+    max_jobs: 500
+    allocate_timeout: 60s
+    destroy_timeout: 60s
+  workflows:
+    num_workers: 4
+    max_jobs: 500
+    allocate_timeout: 60s
+    destroy_timeout: 60s
+
+grpc:
+  listen: tcp://0.0.0.0:9001
+  proto:
+    - "./proto/*.proto"
+  pool:
+    num_workers: 4
+    max_jobs: 500
+    allocate_timeout: 60s
+    destroy_timeout: 60s
+
+metrics:
+  address: 0.0.0.0:2112
+
+logs:
+  mode: production
+  level: info
+  output: stdout
+  err_output: stderr
+  encoding: json
+
+reload:
+  enabled: true
+  interval: 1s
+  patterns:
+    - ".php"
+  services:
+    http:
+      enabled: true
+      dirs:
+        - "./"
+      ignore:
+        - "vendor"
+        - "tests"
+    grpc:
+      enabled: true
+      dirs:
+        - "./"
+      ignore:
+        - "vendor"
+        - "tests"

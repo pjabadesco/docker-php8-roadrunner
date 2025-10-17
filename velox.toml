@@ -1,0 +1,25 @@
+[roadrunner]
+ref = "v2025.1.4"
+
+[build]
+output = "rr"
+
+
+[github.plugins]
+
+# Core RR plugins
+logger = { owner = "roadrunner-server", repository = "logger", ref = "v5.0.3" }
+rpc = { owner = "roadrunner-server", repository = "rpc", ref = "v5.1.9" }
+server = { owner = "roadrunner-server", repository = "server", ref = "v5.2.4" }
+http = { owner = "roadrunner-server", repository = "http", ref = "v5.2.8" }
+jobs = { owner = "roadrunner-server", repository = "jobs", ref = "v5.1.6" }
+
+# Required job drivers
+redis = { owner = "roadrunner-server", repository = "redis", ref = "v5.1.5" }
+
+# Optional but useful plugins
+lock = { owner = "roadrunner-server", repository = "lock", ref = "v5.0.4" }
+metrics = { owner = "roadrunner-server", repository = "metrics", ref = "v5.0.3" }
+centrifuge = { owner = "roadrunner-server", repository = "centrifuge", ref = "v5.0.4" }
+otel = { owner = "roadrunner-server", repository = "otel", ref = "v5.0.0" }
+gzip = { owner = "roadrunner-server", repository = "gzip", ref = "v5.0.2" }

@@ -1,9 +1,11 @@
-version: '3.8'
-
 services:
   app:
-    image: pjabadesco/php8-roadrunner:latest
+    # image: pjabadesco/php8-roadrunner:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: php-roadrunner-app
+    platform: linux/amd64
     volumes:
       - ./:/app
       - ./php.ini:/usr/local/etc/php/php.ini:ro
@@ -45,6 +47,7 @@ services:
       - TEMPORAL_NAMESPACE=${TEMPORAL_NAMESPACE:-default}
     networks:
       - app-network
+    command: sh -c "cd /app && rr serve -c .rr.yaml"
 
 networks:
   app-network:
