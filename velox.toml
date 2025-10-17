@@ -4,7 +4,6 @@ ref = "v2025.1.4"
 [build]
 output = "rr"
 
-
 [github.plugins]
 
 # Core RR plugins
@@ -15,7 +14,7 @@ http = { owner = "roadrunner-server", repository = "http", ref = "v5.2.8" }
 jobs = { owner = "roadrunner-server", repository = "jobs", ref = "v5.1.6" }
 
 # Required job drivers
-redis = { owner = "roadrunner-server", repository = "redis", ref = "v5.1.5" }
+kafka = { owner = "roadrunner-server", repository = "kafka", ref = "v5.2.3" }
 
 # Optional but useful plugins
 lock = { owner = "roadrunner-server", repository = "lock", ref = "v5.0.4" }
