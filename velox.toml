@@ -4,6 +4,9 @@ ref = "v2025.1.4"
 [build]
 output = "rr"
 
+[github.token]
+token = "${GITHUB_TOKEN}"
+
 [github.plugins]
 
 # Core RR plugins
@@ -22,3 +25,5 @@ metrics = { owner = "roadrunner-server", repository = "metrics", ref = "v5.0.3" 
 centrifuge = { owner = "roadrunner-server", repository = "centrifuge", ref = "v5.0.4" }
 otel = { owner = "roadrunner-server", repository = "otel", ref = "v5.0.0" }
 gzip = { owner = "roadrunner-server", repository = "gzip", ref = "v5.0.2" }
+headers = { owner = "roadrunner-server", repository = "headers", ref = "v5.0.2" }
+static = { owner = "roadrunner-server", repository = "static", ref = "v5.0.2" }

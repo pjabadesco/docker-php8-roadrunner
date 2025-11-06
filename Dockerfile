@@ -1,6 +1,10 @@
 # Use Golang to build RoadRunner with all plugins including Redis
 FROM golang:1.25.3-alpine3.22 AS roadrunner-builder
 
+# GitHub token for Velox (defaults to empty for rate-limited anonymous access)
+ARG GITHUB_TOKEN=""
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+
 # Install git and build dependencies
 RUN apk add --no-cache git
 
