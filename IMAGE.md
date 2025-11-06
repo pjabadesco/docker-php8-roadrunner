@@ -5,7 +5,7 @@ docker build -t pjabadesco/php8-roadrunner:1.3 .
 
 ## NEW
 
-docker buildx build --platform=linux/amd64 --build-arg LEGACY_TLS=true --build-arg GITHUB_TOKEN="" --tag=php8-roadrunner:latest --load .
+docker buildx build --platform=linux/amd64 --build-arg LEGACY_TLS=true --tag=php8-roadrunner:latest --load .
 
 docker tag php8-roadrunner:latest pjabadesco/php8-roadrunner:1.3
 docker push pjabadesco/php8-roadrunner:1.3
